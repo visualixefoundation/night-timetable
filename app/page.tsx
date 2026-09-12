@@ -42,58 +42,88 @@ export default async function HomePage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <p className="text-sm text-muted mb-1">This week</p>
-        <h1 className="font-display text-3xl text-ink">Night class timetable</h1>
+      <div className="mb-10">
+        <p className="text-sm text-muted mb-1.5 tracking-wide">This week</p>
+        <h1 className="font-display text-3xl sm:text-4xl text-ink tracking-tight">
+          Night class timetable
+        </h1>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 sm:gap-4">
         {weekDates.map((date) => {
           const dateStr = date.toISOString().slice(0, 10);
-          const dayEntries = entries.filter((e: any) => String(e.date).slice(0, 10) === dateStr);
+          const dayEntries = entries.filter(
+            (e: any) => String(e.date).slice(0, 10) === dateStr
+          );
           const isToday = isSameDay(date, today);
 
           return (
             <div
               key={dateStr}
-              className={`rounded-lg bg-white border p-4 ${
-                isToday ? 'border-gold border-l-4 shadow-sm' : 'border-line'
-              }`}
+              className={`
+                group relative rounded-xl border p-4 transition-all duration-200
+                ${
+                  isToday
+                    ? 'bg-gold/[0.07] border-gold/60 border-l-[3px] shadow-md shadow-gold/10'
+                    : 'bg-white border-line hover:border-line/80 hover:shadow-md hover:-translate-y-0.5'
+                }
+              `}
             >
-              <div className="flex items-baseline justify-between mb-3">
+              <div className="flex items-start justify-between mb-4">
                 <div>
-                  <div className="font-display text-lg leading-tight">
+                  <div
+                    className={`font-display text-lg leading-none ${
+                      isToday ? 'text-gold' : 'text-ink'
+                    }`}
+                  >
                     {date.toLocaleDateString(undefined, { weekday: 'short' })}
                   </div>
-                  <div className="text-xs text-muted">
-                    {date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
+                  <div className="text-xs text-muted mt-1">
+                    {date.toLocaleDateString(undefined, {
+                      day: 'numeric',
+                      month: 'short',
+                    })}
                   </div>
                 </div>
+
                 {isToday && (
-                  <span className="text-xs bg-gold/15 text-gold rounded-full px-2 py-0.5">
+                  <span className="text-[11px] font-medium bg-gold/20 text-gold rounded-full px-2.5 py-0.5 tracking-wide">
                     Today
                   </span>
                 )}
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {FORMS.map(({ key, label, dot }) => {
-                  const formEntries = dayEntries.filter((e: any) => e.form === key);
+                  const formEntries = dayEntries.filter(
+                    (e: any) => e.form === key
+                  );
+
                   return (
                     <div key={key}>
-                      <div className="flex items-center gap-1.5 text-xs text-muted mb-1">
+                      <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted mb-1.5">
                         <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
                         {label}
                       </div>
+
                       {formEntries.length === 0 ? (
-                        <div className="text-sm text-muted/70 pl-3">No one yet</div>
+                        <div className="text-sm text-muted/60 pl-3.5 italic">
+                          No one yet
+                        </div>
                       ) : (
-                        formEntries.map((e: any) => (
-                          <div key={e.id} className="text-sm pl-3">
-                            {e.teacher_name}
-                            {e.note && <span className="text-muted"> — {e.note}</span>}
-                          </div>
-                        ))
+                        <div className="space-y-1">
+                          {formEntries.map((e: any) => (
+                            <div
+                              key={e.id}
+                              className="text-sm pl-3.5 text-ink leading-snug"
+                            >
+                              {e.teacher_name}
+                              {e.note && (
+                                <span className="text-muted"> — {e.note}</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </div>
                   );

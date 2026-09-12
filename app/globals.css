@@ -5,3 +5,12 @@
 body {
   font-family: var(--font-body), ui-sans-serif, sans-serif;
 }
+
+/* Soft paper feel */
+body {
+  background-image: radial-gradient(
+    ellipse at top,
+    rgba(198, 138, 46, 0.03) 0%,
+    transparent 60%
+  );
+}
