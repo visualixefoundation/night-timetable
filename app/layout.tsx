@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" className={`${fraunces.variable} ${plexSans.variable}`}>
       <body className="min-h-screen bg-paper text-ink font-sans">
         <header className="bg-chalkboard text-paper">
-          <nav className="max-w-5xl mx-auto px-5 py-4 flex items-center justify-between">
+          <nav className="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
             <a href="/" className="font-display text-lg tracking-tight">
               Night Timetable
             </a>
@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </div>
           </nav>
         </header>
-        <main className="max-w-5xl mx-auto px-5 py-8">{children}</main>
+        <main className="max-w-6xl mx-auto px-5 py-8">{children}</main>
       </body>
     </html>
   );
