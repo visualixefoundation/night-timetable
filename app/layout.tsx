@@ -22,8 +22,8 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${fraunces.variable} ${plexSans.variable}`}>
-      <body className="min-h-screen bg-paper text-ink font-sans antialiased">
-        <header className="bg-chalkboard text-paper border-b border-black/10">
+      <body className="min-h-screen bg-paper text-ink font-sans antialiased flex flex-col">
+        <header className="bg-chalkboard text-paper border-b border-black/10 shrink-0">
           <nav className="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
             <a
               href="/"
@@ -44,7 +44,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </div>
           </nav>
         </header>
-        <main className="max-w-6xl mx-auto px-5 py-8 sm:py-10">{children}</main>
+        <main className="flex-1 flex items-center justify-center px-5 py-10">
+          <div className="w-full max-w-6xl">{children}</div>
+        </main>
       </body>
     </html>
   );
