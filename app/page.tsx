@@ -41,8 +41,8 @@ export default async function HomePage() {
   const today = new Date();
 
   return (
-    <div>
-      <div className="mb-10">
+    <div className="w-full">
+      <div className="mb-10 text-center">
         <p className="text-sm text-muted mb-1.5 tracking-wide">This week</p>
         <h1 className="font-display text-3xl sm:text-4xl text-ink tracking-tight">
           Night class timetable
