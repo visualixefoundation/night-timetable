@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             href="https://visualixe-foundation.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-sage hover:underline"
+            className="text-sm text-chalkboard hover:underline"
           >
             Visualixe Foundation
           </a>
