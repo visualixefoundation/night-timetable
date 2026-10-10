@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Not logged in' }, { status: 401 });
   }
 
-  const { date, form, note } = await request.json();
+  const { date, form, note, force } = await request.json();
   if (!date || !['V', 'VI'].includes(form)) {
     return NextResponse.json(
       { error: 'Date and a valid form (V or VI) are required' },
@@ -16,7 +16,6 @@ export async function POST(request: Request) {
     );
   }
 
-  // Warn if another teacher is already on this form/date
   const { rows: existing } = await sql`
     select teachers.name as teacher_name
     from schedule
@@ -27,6 +26,13 @@ export async function POST(request: Request) {
       and schedule.teacher_id <> ${session.teacherId}
     limit 1
   `;
+
+  if (existing[0] && !force) {
+    return NextResponse.json({
+      needsConfirm: true,
+      conflict: { teacher_name: existing[0].teacher_name },
+    });
+  }
 
   const { rows } = await sql`
     insert into schedule (teacher_id, date, form, note, status)

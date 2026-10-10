@@ -20,7 +20,6 @@ type Teacher = {
 
 function defaultDate() {
   const d = new Date();
-  // Night classes: if it's already evening (after 17:00), default to tomorrow
   if (d.getHours() >= 17) {
     d.setDate(d.getDate() + 1);
   }
@@ -51,38 +50,25 @@ export default function DashboardClient({
     return null;
   }, [entries.length]);
 
-  async function addEntry(e: React.FormEvent) {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    setSaving(true);
-
+  async function submitSchedule(force = false) {
     const res = await fetch('/api/schedule', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date, form, note }),
+      body: JSON.stringify({ date, form, note, force }),
     });
     const data = await res.json();
-    setSaving(false);
 
     if (!res.ok) {
       setError(data.error ?? 'Something went wrong');
       return;
     }
 
-    if (data.conflict?.teacher_name) {
+    if (data.needsConfirm && data.conflict?.teacher_name) {
       const ok = window.confirm(
         `Form ${form} on ${date} already has ${data.conflict.teacher_name}. Mark yourself as teaching anyway?`
       );
-      if (!ok) {
-        // Undo the insert we already did — delete it
-        await fetch('/api/schedule', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: data.entry.id }),
-        });
-        return;
-      }
+      if (!ok) return;
+      return submitSchedule(true);
     }
 
     const newEntry = { ...data.entry, date: String(data.entry.date).slice(0, 10) };
@@ -93,6 +79,18 @@ export default function DashboardClient({
     );
     setNote('');
     setSuccess(`Marked Form ${form} on ${date}.`);
+  }
+
+  async function addEntry(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    setSaving(true);
+    try {
+      await submitSchedule(false);
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function cancelEntry(id: string, label: string) {
