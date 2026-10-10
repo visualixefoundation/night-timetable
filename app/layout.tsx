@@ -29,6 +29,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <main className="flex-1 flex items-start justify-center px-5 py-8 sm:py-10">
           <div className="w-full max-w-6xl">{children}</div>
         </main>
+        <footer className="shrink-0 py-6 text-center">
+          <a
+            href="https://visualixe-foundation.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-sage hover:underline"
+          >
+            Visualixe Foundation
+          </a>
+        </footer>
       </body>
     </html>
   );
