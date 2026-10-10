@@ -10,8 +10,23 @@ export async function POST(request: Request) {
 
   const { date, form, note } = await request.json();
   if (!date || !['V', 'VI'].includes(form)) {
-    return NextResponse.json({ error: 'Date and a valid form (V or VI) are required' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Date and a valid form (V or VI) are required' },
+      { status: 400 }
+    );
   }
+
+  // Warn if another teacher is already on this form/date
+  const { rows: existing } = await sql`
+    select teachers.name as teacher_name
+    from schedule
+    join teachers on teachers.id = schedule.teacher_id
+    where schedule.date = ${date}
+      and schedule.form = ${form}
+      and schedule.status = 'confirmed'
+      and schedule.teacher_id <> ${session.teacherId}
+    limit 1
+  `;
 
   const { rows } = await sql`
     insert into schedule (teacher_id, date, form, note, status)
@@ -21,7 +36,12 @@ export async function POST(request: Request) {
     returning id, date, form, status, note
   `;
 
-  return NextResponse.json({ entry: rows[0] });
+  return NextResponse.json({
+    entry: rows[0],
+    conflict: existing[0]
+      ? { teacher_name: existing[0].teacher_name }
+      : null,
+  });
 }
 
 export async function DELETE(request: Request) {
@@ -35,7 +55,6 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: 'Entry id required' }, { status: 400 });
   }
 
-  // Regular teachers can only delete their own entries; admins can delete any.
   const { rows: meRows } = await sql`select is_admin from teachers where id = ${session.teacherId}`;
   const isAdmin = meRows[0]?.is_admin;
 

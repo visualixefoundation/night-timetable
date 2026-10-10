@@ -3,8 +3,6 @@ import { getSession } from '@/lib/session';
 import { sql } from '@/lib/db';
 import AdminClient from './admin-client';
 
-// Always render at request time - this page reads the session cookie and
-// queries the database directly, so it can't be pre-rendered at build time.
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPage() {
@@ -25,5 +23,11 @@ export default async function AdminPage() {
     order by schedule.date asc
   `;
 
-  return <AdminClient teachers={teachers as any} entries={entries as any} />;
+  return (
+    <AdminClient
+      teachers={teachers as any}
+      entries={entries as any}
+      currentTeacherId={session.teacherId}
+    />
+  );
 }
