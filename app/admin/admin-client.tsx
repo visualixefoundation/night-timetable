@@ -37,6 +37,7 @@ export default function AdminClient({
   const [editEmail, setEditEmail] = useState('');
   const [editError, setEditError] = useState('');
   const [editSaving, setEditSaving] = useState(false);
+  const [resettingId, setResettingId] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -118,6 +119,38 @@ export default function AdminClient({
     setEntries((prev) => prev.filter((e) => e.teacher_name !== t.name));
     setMsg(`${t.name} removed.`);
     router.refresh();
+  }
+
+  async function resetPassword(t: Teacher) {
+    const temp = window.prompt(
+      `Set a temporary password for ${t.name} (min 6 characters).\nThey will be asked to change it on next login.`
+    );
+    if (temp === null) return;
+    if (temp.length < 6) {
+      setError('Temporary password must be at least 6 characters.');
+      return;
+    }
+
+    setError('');
+    setMsg('');
+    setResettingId(t.id);
+
+    const res = await fetch('/api/admin/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: t.id, password: temp }),
+    });
+    const data = await res.json();
+    setResettingId(null);
+
+    if (!res.ok) {
+      setError(data.error ?? 'Failed to reset password');
+      return;
+    }
+
+    setMsg(
+      `Password reset for ${t.name}. Temporary password: ${temp} — share it with them securely.`
+    );
   }
 
   function startEdit(t: Teacher) {
@@ -264,12 +297,19 @@ export default function AdminClient({
                       {t.email}
                     </span>
                   </div>
-                  <div className="flex gap-3 shrink-0">
+                  <div className="flex flex-wrap gap-3 shrink-0 justify-end">
                     <button
                       onClick={() => startEdit(t)}
                       className="text-sage hover:underline"
                     >
                       Edit
+                    </button>
+                    <button
+                      onClick={() => resetPassword(t)}
+                      disabled={resettingId === t.id}
+                      className="text-gold hover:underline disabled:opacity-50"
+                    >
+                      {resettingId === t.id ? 'Resetting…' : 'Reset password'}
                     </button>
                     {!t.is_admin && t.id !== currentTeacherId && (
                       <button
