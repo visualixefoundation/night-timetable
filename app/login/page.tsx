@@ -39,6 +39,14 @@ export default function LoginPage() {
         <h1 className="font-display text-3xl text-ink tracking-tight">Sign in</h1>
       </div>
 
+      <div className="bg-white border border-line rounded-xl px-4 py-3 mb-4 text-sm text-muted leading-relaxed">
+        <p className="font-medium text-ink mb-1">How to use</p>
+        <p>
+          Teachers log in here to mark the nights they teach. Students and staff
+          only need the public timetable — no login required.
+        </p>
+      </div>
+
       <form
         onSubmit={handleSubmit}
         className="bg-white border border-line rounded-xl p-6 shadow-sm space-y-4"
